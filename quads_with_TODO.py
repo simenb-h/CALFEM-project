@@ -118,7 +118,7 @@ def quad4e(ex, ey, D, thickness, eq=None):
             G = np.array([Ndxsi, Ndeta])  # Collect gradients of shape function evaluated at xi and eta
 
             #TODO: Calculate Jacobian, inverse Jacobian and determinant of the Jacobian
-            J = np.eye(2) #TODO: Correct this
+            J = G @ H #TODO: Correct this
             invJ = np.linalg.inv(J)  # Inverse of Jacobian
             detJ = np.linalg.det(J)  # Determinant of Jacobian
 
@@ -129,7 +129,9 @@ def quad4e(ex, ey, D, thickness, eq=None):
             # Strain displacement matrix calculated at position xsi, eta
 
             #TODO: Fill out correct values for strain displacement matrix at current xsi and eta
-            B  = np.zeros((3,8))
+            B  = np.array([[dNdx[0], 0, dNdx[1], 0, dNdx[2], 0, dNdx[3], 0],
+                            [0, dNdy[0], 0, dNdy[1], 0, dNdy[2], 0, dNdy[3]],
+                            [dNdy[0], dNdx[0], dNdy[1], dNdx[1], dNdy[2], dNdx[2], dNdy[3], dNdx[3]]])
 
             #TODO: Fill out correct values for displacement interpolation xsi and eta
             N2 = np.zeros((2,8))
