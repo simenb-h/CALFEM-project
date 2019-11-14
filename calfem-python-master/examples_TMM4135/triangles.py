@@ -43,7 +43,19 @@ def tri3e(ex,ey,D,th,eq=None):
 
     # TODO: fill out missing parts (or reformulate completely)
 
+    ''' MY CODE '''
+ 
+    zeta_px, zeta_py = zeta_partials_x_and_y(ex,ey)
+    
+    B  = (1/A2)*np.array([[zeta_px[0], 0, zeta_px[1], 0, zeta_px[2], 0],
+                            [0, zeta_py[0], 0, zeta_py[1], 0, zeta_py[2]],
+                            [zeta_py[0], zeta_px[0], zeta_py[1], zeta_px[1], zeta_py[2], zeta_px[2]]])
+    
+
     Ke = np.mat(np.zeros((6, 6)))
+    Ke = A*th*B.T*D*B
+
+
 
     if eq is None:
         return Ke
@@ -71,8 +83,23 @@ def zeta_partials_x_and_y(ex,ey):
     zeta_py = np.zeros(3)           # Partial derivative with respect to y
 
     # TODO: fill out missing parts (or reformulate completely)
+   
+   #"Gjort dette selv: "
+    a_i = []
+    v_i = []
+    c_i = []
+    for i in range(0,2): #Hvilken range? 
+        a_i.append(ex[cyclic_ijk[i+1]]*ey[cyclic_ijk[i+2]] - ex[cyclic_ijk[i+2]]*ey[cyclic_ijk[i+1]])
+        v_i.append(ey[cyclic_ijk[i+1]]-ey[cyclic_ijk[i+2]])
+        c_i.append(ex[cyclic_ijk[i+2]]-ex[cyclic_ijk[i+1]])
 
+
+    for i in range(0,2):
+        zeta_px[i] = v_i[i]/A2
+        zeta_py[i] = c_i[i]/A2
+     
     return zeta_px, zeta_py
+
 
 # Functions for 6 node triangle
     
@@ -153,3 +180,4 @@ def tri6e(ex,ey,D,th,eq=None):
 
 
   
+zeta_partials_x_and_y([100,200,300],[100,20,3])
