@@ -46,7 +46,12 @@ def quad4_shapefuncs(xsi, eta):
     # ----- Shape functions -----
     # TODO: fill inn values of the  shape functions
     N = np.zeros(4)
+    N[0] = (1/4) * (1 + xsi) * (1 + eta)
+    N[1] = (1/4) * (1 - xsi) * (1 - eta)
+    N[2] = (1/4) * (1 - xsi) * (1 + eta)
+    N[3] = (1/4) * (1 + xsi) * (1 - eta)
     return N
+
 
 def quad4_shapefuncs_grad_xsi(xsi, eta):
     """
@@ -56,6 +61,10 @@ def quad4_shapefuncs_grad_xsi(xsi, eta):
     # TODO: fill inn values of the  shape functions gradients with respect to xsi
 
     Ndxi = np.zeros(4)
+    Ndxi[0] = (1/4) * (1 + eta)
+    Ndxi[1] = (1/4) * (1 - eta) * (-1)
+    Ndxi[2] = (1/4) * (1 + eta) * (-1)
+    Ndxi[3] = (1/4) * (1 - eta)
     return Ndxi
 
 
@@ -66,9 +75,11 @@ def quad4_shapefuncs_grad_eta(xsi, eta):
     # ----- Derivatives of shape functions with respect to eta -----
     # TODO: fill inn values of the  shape functions gradients with respect to xsi
     Ndeta = np.zeros(4)
+    Ndeta[0] = (1/4) * (1 + xsi)
+    Ndeta[1] = (1/4) * (1 - xsi) * (-1)
+    Ndeta[2] = (1/4) * (1 - xsi)
+    Ndeta[3] = (1/4) * (1 + xsi) * (-1)
     return Ndeta
-
-
 
 
 def quad4e(ex, ey, D, thickness, eq=None):
@@ -134,12 +145,15 @@ def quad4e(ex, ey, D, thickness, eq=None):
                             [dNdy[0], dNdx[0], dNdy[1], dNdx[1], dNdy[2], dNdx[2], dNdy[3], dNdx[3]]])
 
             #TODO: Fill out correct values for displacement interpolation xsi and eta
-            N2 = np.zeros((2,8))
+            zeroMatrix = np.zeros((1,4))
+            N2 = np.concatenate([N1, zeroMatrix], [zeroMatrix, N1])
 
             # Evaluates integrand at current integration points and adds to final solution
             Ke += (B.T) @ D @ B * detJ * t * gw[iGauss] * gw[jGauss]
             fe += (N2.T) @ f    * detJ * t * gw[iGauss] * gw[jGauss]
-
+    
+    print(Ke)
+    print(fe)
     return Ke, fe  # Returns stiffness matrix and nodal force vector
 
 
