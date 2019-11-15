@@ -53,8 +53,8 @@ def tri3e(ex,ey,D,th,eq=None):
     
 
     Ke = np.mat(np.zeros((6, 6)))
-    Ke = A*th*B.T*D*B
 
+    Ke = (B.T * D * B) * A * th
 
 
     if eq is None:
@@ -84,7 +84,6 @@ def zeta_partials_x_and_y(ex,ey):
 
     # TODO: fill out missing parts (or reformulate completely)
    
-   #"Gjort dette selv: "
     a_i = []
     v_i = []
     c_i = []
@@ -92,7 +91,7 @@ def zeta_partials_x_and_y(ex,ey):
         a_i.append(ex[cyclic_ijk[i+1]]*ey[cyclic_ijk[i+2]] - ex[cyclic_ijk[i+2]]*ey[cyclic_ijk[i+1]])
         v_i.append(ey[cyclic_ijk[i+1]]-ey[cyclic_ijk[i+2]])
         c_i.append(ex[cyclic_ijk[i+2]]-ex[cyclic_ijk[i+1]])
-
+        #A_i?
 
     for i in range(0,2):
         zeta_px[i] = v_i[i]/A2
@@ -120,7 +119,17 @@ def tri6_shape_functions(zeta):
 
     N6 = np.zeros(6)
 
-    # TODO: fill out missing parts (or reformulate completely)
+    # TODO: fill out missing parts (or reformulate completely) 
+    '''DONE?'''
+
+    for i in range(0,2):
+       z = zeta[i]
+       N6.append(z*2(z-1))
+    
+    for i in range(0,2):
+        j = cyclic_ijk[i+1]
+        N6.append(4*zeta[i]*zeta[j])
+
 
     return N6
 
@@ -135,6 +144,10 @@ def tri6_shape_function_partials_x_and_y(zeta,ex,ey):
     cyclic_ijk = [0,1,2,0,1]      # Cyclic permutation of the nodes i,j,k
 
     # TODO: fill out missing parts (or reformulate completely)
+    ''' DONE? '''
+    N6_px = tri6_shape_functions(zeta_px)
+    N6_py = tri6_shape_functions(zeta_py)
+
 
     return N6_px, N6_py
 
@@ -146,6 +159,13 @@ def tri6_Bmatrix(zeta,ex,ey):
     Bmatrix = np.matrix(np.zeros((3,12)))
 
     # TODO: fill out missing parts (or reformulate completely)
+    ''' DONE ? '''
+    A = tri6_area(ex,ey)
+    iA2 = 1/(2*A) #i before A2 because it's the inverse of A2
+
+    B  = (iA2)*np.array([[nx[0], 0, nx[1], 0, nx[2], 0],
+                  [0, ny[0], 0, ny[1], 0, ny[2]],
+                  [ny[0],nx[0],ny[1],nx[1],ny[2],nx[2]]])
 
     return Bmatrix
 
@@ -156,6 +176,7 @@ def tri6_Kmatrix(ex,ey,D,th,eq=None):
                         [0.0,0.5,0.5],
                         [0.5,0.0,0.5]])
     
+    '''HVA ER DENNE VERDIEN OG SKAL DEN INN I B? '''
     wInt = np.array([1.0/3.0,1.0/3.0,1.0/3.0])
 
     A    = tri6_area(ex,ey)
@@ -163,12 +184,16 @@ def tri6_Kmatrix(ex,ey,D,th,eq=None):
     Ke = np.matrix(np.zeros((12,12)))
 
     # TODO: fill out missing parts (or reformulate completely)
+    B = tri6_Bmatrix(zetaInt, ex, ey)
+
+
+    Ke = (B.T * D * B)* A * th
 
     if eq is None:
         return Ke
     else:
         fe = np.matrix(np.zeros((12,1)))
-
+        ''' HVA SKJER OM DET ER EN FORDELT LAST PÅ? ''' 
         # TODO: fill out missing parts (or reformulate completely)
 
         return Ke, fe
@@ -176,8 +201,3 @@ def tri6_Kmatrix(ex,ey,D,th,eq=None):
 def tri6e(ex,ey,D,th,eq=None):
     return tri6_Kmatrix(ex,ey,D,th,eq)
 
-
-
-
-  
-zeta_partials_x_and_y([100,200,300],[100,20,3])
